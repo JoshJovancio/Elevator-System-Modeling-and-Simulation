@@ -1,118 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Campus Elevator Simulation</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
     <style>
-        body {
+        html, body {
             margin: 0;
-            padding: 20px;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: #f8fafc;
+            padding: 24px;
+            background: #f8fafc;
+            color: #172033;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Replicates the 72% / 28% side-by-side split from app.py */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 72fr 28fr;
+            gap: 32px;
+            width: 100%;
+            max-width: 1380px;
+            box-sizing: border-box;
+        }
+
+        .simulation-column {
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
+
+        /* Control bar configuration context */
         .live-panel {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
+            display: grid;
+            grid-template-columns: 112px 150px 1fr 1fr 1fr 120px;
+            gap: 8px;
             align-items: center;
+            margin-bottom: 12px;
+            width: 100%;
+            max-width: 980px;
+            padding: 10px;
             background: #ffffff;
-            padding: 12px 24px;
+            border: 1px solid #dbe3ef;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 16px;
-            border: 1px solid #e2e8f0;
+            box-sizing: border-box;
         }
-        .live-field {
-            display: flex;
-            flex-direction: column;
-            font-size: 11px;
+
+        .live-panel button,
+        .live-panel select {
+            height: 32px;
+            border: 1px solid #c8d3e3;
+            border-radius: 6px;
+            background: #f8fafc;
+            color: #172033;
             font-weight: 600;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            cursor: pointer;
+            padding: 0 8px;
+            font-size: 13px;
         }
-        .live-field input[type="range"] {
-            margin-top: 4px;
-            width: 100px;
+
+        .live-panel button:hover,
+        .live-panel select:hover {
+            background: #f1f5f9;
         }
-        .live-field span {
-            font-weight: normal;
-            color: #0f172a;
-            margin-top: 2px;
-        }
-        .checkbox {
-            flex-direction: row;
-            align-items: center;
+
+        .live-field {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             gap: 6px;
+            align-items: center;
+            color: #59677f;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .live-field input[type="range"] {
+            width: 100%;
             cursor: pointer;
-            margin-top: 12px;
         }
-        button {
-            background-color: #1e293b;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 500;
+
+        .live-field span {
+            font-family: monospace;
+            font-size: 13px;
+            color: #172033;
+            min-width: 32px;
+            text-align: right;
+        }
+
+        .live-field.checkbox {
+            grid-template-columns: auto auto;
+            justify-content: center;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        button:hover {
-            background-color: #0f172a;
-        }
-        select {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            background: white;
-        }
+
         #canvas-wrap {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 980px;
+        }
+
+        canvas {
+            border: 1px solid #dbe3ef;
             border-radius: 8px;
-            overflow: hidden;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.10);
+        }
+
+        /* Native Sidebar panel mapping elements directly from col_right in app.py */
+        .description-sidebar {
+            background: #ffffff;
+            border: 1px solid #dbe3ef;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+            height: fit-content;
+        }
+
+        .description-sidebar h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #0f172a;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 6px;
+        }
+
+        .description-sidebar h2:not(:first-child) {
+            margin-top: 28px;
+        }
+
+        .description-sidebar p, 
+        .description-sidebar li {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        .description-sidebar ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .description-sidebar code {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #0f172a;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-    <div class="live-panel">
-        <button id="pauseBtn" type="button">Pause</button>
+    <div class="app-layout">
         
-        <label class="live-field">Strategy
-            <select id="strategyInput">
-                <option value="Split zone">Split zone</option>
-                <option value="All floors">All floors</option>
-                <option value="Dynamic zoning">Dynamic zoning</option>
-            </select>
-        </label>
-        
-        <label class="live-field">Speed
-            <input id="speedInput" type="range" min="0.5" max="12" value="3" step="0.5" />
-            <span id="speedValue">3.0</span>
-        </label>
-        
-        <label class="live-field">Arrivals
-            <input id="arrivalInput" type="range" min="0.6" max="3.0" value="1.35" step="0.05" />
-            <span id="arrivalValue">1.35</span>
-        </label>
-        
-        <label class="live-field">Travel
-            <input id="travelInput" type="range" min="4" max="16" value="8" step="1" />
-            <span id="travelValue">8s</span>
-        </label>
-        
-        <label class="live-field checkbox">
-            <input id="floor2Input" type="checkbox" />
-            Serve Floor 2
-        </label>
-    </div>
+        <div class="simulation-column">
+            <div class="live-panel">
+                <button id="pauseBtn" type="button">Pause</button>
+                <select id="strategyInput">
+                    <option value="Split zone">Split zone</option>
+                    <option value="All floors">All floors</option>
+                    <option value="Dynamic zoning">Dynamic zoning</option>
+                </select>
+                <label class="live-field">Speed
+                    <input id="speedInput" type="range" min="0.5" max="12" value="3" step="0.5" />
+                    <span id="speedValue">3.0</span>
+                </label>
+                <label class="live-field">Arrivals
+                    <input id="arrivalInput" type="range" min="0.6" max="3.0" value="1.35" step="0.05" />
+                    <span id="arrivalValue">1.35</span>
+                </label>
+                <label class="live-field">Travel
+                    <input id="travelInput" type="range" min="4" max="16" value="8" step="1" />
+                    <span id="travelValue">8s</span>
+                </label>
+                <label class="live-field checkbox">
+                    <input id="floor2Input" type="checkbox" />
+                    Floor 2
+                </label>
+            </div>
+            <div id="canvas-wrap"></div>
+        </div>
 
-    <div id="canvas-wrap"></div>
+        <div class="description-sidebar">
+            <h2>Split Zone Scenario</h2>
+            <p><strong>Blue elevators</strong> serve floors <code>1, 3, 4, 5, 6, 7</code>.</p>
+            <p><strong>Red elevators</strong> serve floors <code>1, 5, 8, 9, 10, 11</code>.</p>
+
+            <h2>Dynamic Zone Scenario</h2>
+            <p><strong>Elevator 1</strong> serve floors <code>1, 2, 3, 4, 5</code>.</p>
+            <p><strong>Elevator 2</strong> serve floors <code>1, 5, 6, 7, 8</code>.</p>
+            <p><strong>Elevator 3</strong> serve floors <code>1, 5, 8, 9, 10, 11</code>.</p>
+            <p><strong>Elevator 4</strong> serve <strong>all</strong> floors.</p>
+
+            <h2>Metrics</h2>
+            <p>The animation reports average waiting time, maximum waiting time, passenger throughput, transfer count, queue length, and elevator utilization.</p>
+
+            <h2>Course Schedule</h2>
+            <ul>
+                <li><code>07:30-09:10</code></li>
+                <li><code>09:30-12:00</code></li>
+                <li><code>13:00-15:00</code></li>
+                <li><code>15:30-17:00</code></li>
+            </ul>
+        </div>
+
+    </div>
 
     <script>
         const APP_CONFIG = {
@@ -133,6 +228,54 @@
                 "classTime": 1.1
             }
         };
+
+        // Static Event Hook Bindings to synchronize DOM changes directly into active memory
+        document.addEventListener("DOMContentLoaded", () => {
+            const speedInput = document.getElementById("speedInput");
+            const speedValue = document.getElementById("speedValue");
+            const arrivalInput = document.getElementById("arrivalInput");
+            const arrivalValue = document.getElementById("arrivalValue");
+            const travelInput = document.getElementById("travelInput");
+            const travelValue = document.getElementById("travelValue");
+            const strategyInput = document.getElementById("strategyInput");
+            const floor2Input = document.getElementById("floor2Input");
+            const pauseBtn = document.getElementById("pauseBtn");
+
+            speedInput.addEventListener("input", (e) => {
+                const val = parseFloat(e.target.value).toFixed(1);
+                speedValue.textContent = val;
+                APP_CONFIG.simSpeed = parseFloat(val);
+            });
+
+            arrivalInput.addEventListener("input", (e) => {
+                const val = parseFloat(e.target.value).toFixed(2);
+                arrivalValue.textContent = val;
+                APP_CONFIG.arrivalScale = parseFloat(val);
+            });
+
+            travelInput.addEventListener("input", (e) => {
+                const val = e.target.value;
+                travelValue.textContent = val + "s";
+                APP_CONFIG.travelTimePerFloor = parseInt(val, 10);
+            });
+
+            strategyInput.addEventListener("change", (e) => {
+                APP_CONFIG.strategy = e.target.value;
+            });
+
+            floor2Input.addEventListener("change", (e) => {
+                APP_CONFIG.serveFloor2 = e.target.checked;
+            });
+
+            let isPaused = false;
+            pauseBtn.addEventListener("click", () => {
+                isPaused = !isPaused;
+                pauseBtn.textContent = isPaused ? "Resume" : "Pause";
+                if (typeof noLoop === "function" && typeof loop === "function") {
+                    isPaused ? noLoop() : loop();
+                }
+            });
+        });
     </script>
 
     <script src="models.js"></script>
