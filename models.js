@@ -109,7 +109,7 @@ class Elevator {
     canServe(floorIdx, strategy) {
         if (floorIdx === FLOOR_2_INDEX && runtimeConfig.serveFloor2) return true;
         if (strategy === "All floors") return true;
-        if (strategy === "Dynamic zoning") return dynamicServiceFloors(this.id).includes(floorIdx);
+        if (strategy === "Multi zoning") return dynamicServiceFloors(this.id).includes(floorIdx);
         if (this.zone === "BLUE") return BLUE_FLOORS.includes(floorIdx);
         return RED_FLOORS.includes(floorIdx);
     }

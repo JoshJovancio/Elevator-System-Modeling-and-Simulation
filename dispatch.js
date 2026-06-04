@@ -183,7 +183,7 @@ function selectNextTarget(elevator, floorQueues, strategy) {
     }
 
     // Dynamic Zoning Strategy Selection Engine
-    if (strategy === "Dynamic zoning") {
+    if (strategy === "Multi zoning") {
         callableFloors.sort((a, b) => {
             const queueB = floorQueues[b].count();
             const queueA = floorQueues[a].count();
