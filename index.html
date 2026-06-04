@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Elevator Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .live-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            background: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .live-field {
+            display: flex;
+            flex-direction: column;
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .live-field input[type="range"] {
+            margin-top: 4px;
+            width: 100px;
+        }
+        .live-field span {
+            font-weight: normal;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+        .checkbox {
+            flex-direction: row;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        button {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #0f172a;
+        }
+        select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: white;
+        }
+        #canvas-wrap {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="live-panel">
+        <button id="pauseBtn" type="button">Pause</button>
+        
+        <label class="live-field">Strategy
+            <select id="strategyInput">
+                <option value="Split zone">Split zone</option>
+                <option value="All floors">All floors</option>
+                <option value="Dynamic zoning">Dynamic zoning</option>
+            </select>
+        </label>
+        
+        <label class="live-field">Speed
+            <input id="speedInput" type="range" min="0.5" max="12" value="3" step="0.5" />
+            <span id="speedValue">3.0</span>
+        </label>
+        
+        <label class="live-field">Arrivals
+            <input id="arrivalInput" type="range" min="0.6" max="3.0" value="1.35" step="0.05" />
+            <span id="arrivalValue">1.35</span>
+        </label>
+        
+        <label class="live-field">Travel
+            <input id="travelInput" type="range" min="4" max="16" value="8" step="1" />
+            <span id="travelValue">8s</span>
+        </label>
+        
+        <label class="live-field checkbox">
+            <input id="floor2Input" type="checkbox" />
+            Serve Floor 2
+        </label>
+    </div>
+
+    <div id="canvas-wrap"></div>
+
+    <script>
+        const APP_CONFIG = {
+            "strategy": "Split zone",
+            "simSpeed": 3.0,
+            "arrivalScale": 1.35,
+            "capacityMin": 12,
+            "capacityMax": 15,
+            "travelTimePerFloor": 8,
+            "boardingTimePerPassenger": 1.2,
+            "doorTime": 5,
+            "serveFloor2": false,
+            "rates": {
+                "morning": 5.8,
+                "transition": 4.0,
+                "lunch": 4.5,
+                "outflow": 5.2,
+                "classTime": 1.1
+            }
+        };
+    </script>
+
+    <script src="models.js"></script>
+    <script src="dispatch.js"></script>
+    <script src="simulation.js"></script>
+</body>
+</html>
